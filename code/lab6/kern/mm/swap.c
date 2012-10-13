@@ -235,7 +235,6 @@ check_swap(void)
      cprintf("set up init env for check_swap begin!\n");
      //setup initial vir_page<->phy_page environment for page relpacement algorithm 
 
-     
      pgfault_num=0;
      
      check_content_set();
@@ -271,7 +270,6 @@ check_swap(void)
      nr_free = nr_free_store;
      free_list = free_list_store;
 
-     
      le = &free_list;
      while ((le = list_next(le)) != &free_list) {
          struct Page *p = le2page(le, page_link);

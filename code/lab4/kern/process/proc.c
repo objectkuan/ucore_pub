@@ -102,6 +102,16 @@ alloc_proc(void) {
      *       uint32_t flags;                             // Process flag
      *       char name[PROC_NAME_LEN + 1];               // Process name
      */
+		proc->state = PROC_UNINIT;
+		proc->pid = -1;
+		proc->runs = 0;
+		proc->kstack = 0;
+		proc->need_resched = 0;
+		proc->parent = 0;
+		proc->mm = 0;
+		proc->tf = 0;
+		proc->cr3 = boot_cr3;
+		proc->flags = 0;
     }
     return proc;
 }
@@ -290,12 +300,21 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
      */
 
     //    1. call alloc_proc to allocate a proc_struct
+	proc = alloc_proc();
     //    2. call setup_kstack to allocate a kernel stack for child process
+	setup_kstack(proc);
     //    3. call copy_mm to dup OR share mm according clone_flag
+	copy_mm(clone_flags, proc);
     //    4. call copy_thread to setup tf & context in proc_struct
+	copy_thread(proc, stack, tf);
     //    5. insert proc_struct into hash_list && proc_list
+	proc->pid = get_pid();
+	hash_proc(proc);
+	list_add_before(&proc_list, &(proc->list_link));
     //    6. call wakup_proc to make the new child process RUNNABLE
+	proc->state = PROC_RUNNABLE;
     //    7. set ret vaule using child proc's pid
+	ret = proc->pid;
 fork_out:
     return ret;
 

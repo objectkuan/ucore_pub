@@ -1,4 +1,14 @@
 file bin/kernel
+
+define wpc
+x/10i $pc
+end
+
+define wcspc
+x/10i $cs*0x10+$pc
+end
+
 target remote :1234
-break kern_init
-continue
+# b *0x7c00
+# continue
+# break kern_init

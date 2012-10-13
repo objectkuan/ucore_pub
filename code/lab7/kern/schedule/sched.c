@@ -4,7 +4,8 @@
 #include <sched.h>
 #include <stdio.h>
 #include <assert.h>
-#include <default_sched.h>
+#include <default_sched_stride.h>
+//#include <default_sched.h>
 
 // the list of timer
 static list_entry_t timer_list;
@@ -46,10 +47,10 @@ void
 sched_init(void) {
     list_init(&timer_list);
 
-    sched_class = &default_sched_class;
+    sched_class = &default_sched_stride_class;
 
     rq = &__rq;
-    rq->max_time_slice = 20;
+    rq->max_time_slice = MAX_TIME_SLICE;
     sched_class->init(rq);
 
     cprintf("sched class: %s\n", sched_class->name);

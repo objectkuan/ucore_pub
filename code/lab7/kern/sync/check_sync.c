@@ -117,18 +117,34 @@ void phi_test_condvar (i) {
     }
 }
 
+void print_st() {
+	int i;
+	for(i = 0; i < 5; i++) {
+		if(state_condvar[i] == 0)
+			cprintf("thinking ");
+		else if(state_condvar[i] == 1)
+			cprintf("hungry ");
+		else if(state_condvar[i] == 2)
+			cprintf("eating ");
+	}
+	cprintf("\n");
+}
 
 void phi_take_forks_condvar(int i) {
      down(&(mtp->mutex));
 //--------into routine in monitor--------------
      // LAB7 EXERCISE1: YOUR CODE
      // I am hungry
+	 state_condvar[i] = HUNGRY;
      // try to get fork
+	 phi_test_condvar(i);
+	 if(state_condvar[i]!=EATING)
+		 cond_wait(&mtp->cv[i]);
 //--------leave routine in monitor--------------
       if(mtp->next_count>0)
          up(&(mtp->next));
       else
-         up(&(mtp->mutex));
+		  up(&(mtp->mutex));
 }
 
 void phi_put_forks_condvar(int i) {
@@ -137,13 +153,18 @@ void phi_put_forks_condvar(int i) {
 //--------into routine in monitor--------------
      // LAB7 EXERCISE1: YOUR CODE
      // I ate over
+	 state_condvar[i] = THINKING;
      // test left and right neighbors
+	 phi_test_condvar(LEFT); /* 看一下左邻居现在是否能进餐 */
+	 phi_test_condvar(RIGHT); /* 看一下右邻居现在是否能进餐 */
 //--------leave routine in monitor--------------
      if(mtp->next_count>0)
         up(&(mtp->next));
      else
         up(&(mtp->mutex));
 }
+
+int quited = 0;
 
 //---------- philosophers using monitor (condition variable) ----------------------
 int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N-1*/
@@ -163,6 +184,8 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
         /* return two forks back*/
     }
     cprintf("No.%d philosopher_condvar quit\n",i);
+	if(++quited == N) 
+		kfree(mtp->cv);
     return 0;    
 }
 

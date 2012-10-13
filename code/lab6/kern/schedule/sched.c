@@ -4,7 +4,8 @@
 #include <sched.h>
 #include <stdio.h>
 #include <assert.h>
-#include <default_sched.h>
+#include <default_sched_stride.h>
+//#include <default_sched.h>
 
 // the list of timer
 static list_entry_t timer_list;
@@ -12,6 +13,67 @@ static list_entry_t timer_list;
 static struct sched_class *sched_class;
 
 static struct run_queue *rq;
+
+static int swi = 0;
+static void
+cp(const char *fmt, ...) {
+	if(swi) {
+		va_list ap;
+		
+		va_start(ap, fmt);
+		int cnt = vcprintf(fmt, ap);
+		va_end(ap);
+		
+		return cnt;
+	}
+}
+
+static void
+print_p(struct proc_struct* p) {
+	cprintf("|-process pid(%d) name(%s)\n", p->pid, p->name);
+	cprintf("    |-state: %d\n", p->state);
+	cprintf("    |-need_resched: %d\n", p->need_resched);
+	cprintf("    |-parent: %d\n", p->parent ? p->parent->pid : -2);
+	cprintf("    |-wait_state: %u\n", p->wait_state);
+	cprintf("    |-time_slice: %d\n", p->time_slice);
+	cprintf("    |-lab6_stride: %u\n", p->lab6_stride);
+	cprintf("    |-lab6_priority: %u\n", p->lab6_priority);
+}
+
+static void 
+print_sh(skew_heap_entry_t* root) {
+	struct proc_struct* proc = le2proc(root, lab6_run_pool);
+	cprintf("%d(%d)", proc->pid, proc->lab6_stride);
+	cprintf("[");
+	if(root->left != NULL) print_sh(root->left); else cprintf("-");
+	cprintf(",");
+	if(root->right != NULL) print_sh(root->right); else cprintf("-");
+	cprintf("]");
+	
+}
+
+void
+print_heap() {
+	if(!swi) return;
+	if(rq->lab6_run_pool == NULL) {
+		cprintf("EMPTY HEAP\n");
+	} else {
+		print_sh(rq->lab6_run_pool);
+		cprintf("\n");
+	}
+}
+
+static void
+print_rq() {
+	return;
+	cprintf("list\n");
+	list_entry_t *le = list_next(&(rq->run_list));
+	while(le != &(rq->run_list)) {
+		struct proc_struct *p = le2proc(le, run_link);
+		print_p(p);
+		le = list_next(le);
+	}
+}
 
 static inline void
 sched_class_enqueue(struct proc_struct *proc) {
@@ -33,6 +95,7 @@ sched_class_pick_next(void) {
 static void
 sched_class_proc_tick(struct proc_struct *proc) {
     if (proc != idleproc) {
+		// cp("tick proc %d left %u\n", proc->pid, proc->time_slice);
         sched_class->proc_tick(rq, proc);
     }
     else {
@@ -45,8 +108,8 @@ static struct run_queue __rq;
 void
 sched_init(void) {
     list_init(&timer_list);
-
-    sched_class = &default_sched_class;
+	
+    sched_class = &default_sched_stride_class;
 
     rq = &__rq;
     rq->max_time_slice = MAX_TIME_SLICE;

@@ -85,5 +85,6 @@ int do_yield(void);
 int do_execve(const char *name, size_t len, unsigned char *binary, size_t size);
 int do_wait(int pid, int *code_store);
 int do_kill(int pid);
+
 #endif /* !__KERN_PROCESS_PROC_H__ */
 

@@ -206,7 +206,7 @@ check_swap(void)
      assert(vma != NULL);
 
      insert_vma_struct(mm, vma);
-
+	 
      //setup the temp Page Table vaddr 0~4MB
      cprintf("setup Page Table for vaddr 0X1000, so alloc a page\n");
      pte_t *temp_ptep=NULL;
@@ -234,8 +234,7 @@ check_swap(void)
      
      cprintf("set up init env for check_swap begin!\n");
      //setup initial vir_page<->phy_page environment for page relpacement algorithm 
-
-     
+	 
      pgfault_num=0;
      
      check_content_set();
@@ -260,7 +259,7 @@ check_swap(void)
      for (i=0;i<CHECK_VALID_PHY_PAGE_NUM;i++) {
          free_pages(check_rp[i],1);
      } 
-
+	 
      //free_page(pte2page(*temp_ptep));
     free_page(pa2page(pgdir[0]));
      pgdir[0] = 0;
@@ -270,8 +269,7 @@ check_swap(void)
      
      nr_free = nr_free_store;
      free_list = free_list_store;
-
-     
+	 
      le = &free_list;
      while ((le = list_next(le)) != &free_list) {
          struct Page *p = le2page(le, page_link);

@@ -44,7 +44,7 @@ kern_init(void) {
     
     ide_init();                 // init ide devices
     swap_init();                // init swap
-    fs_init();                  // init fs
+    //fs_init();                  // init fs
     
     clock_init();               // init clock interrupt
     intr_enable();              // enable irq interrupt
