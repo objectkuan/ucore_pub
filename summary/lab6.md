@@ -2,7 +2,7 @@ By Object Ho
 
 # Lab 6: Scheduling #
 
-> Lab 6 is quite interesting because we just need to focus on the algorithm. The **Timer** part in the doc may be useless in this lab if you only want to finish it. But we do need to concern about the **Run Queue** and the structured scheduler. The RR scheduler can work once we add in the codes from Lab 1~4. And we need to implement the **Stride Scheduler**
+> Lab 6 is quite interesting because we just need to focus on the algorithm. The **Timer** part in the doc may be useless in this lab if you only want to finish it. But we do need to concern about the **Run Queue** and the structured scheduler. The RR scheduler can work once we add in the codes from Lab 1~4. And we need to implement the **Stride Scheduler**.
 
 ## Stride Scheduler ##
 
