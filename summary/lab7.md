@@ -16,7 +16,7 @@ By Object Ho
 
 > This is because the condition variable in the monitor need one page of space. And it's initialization violates this assertion.
 
-> We should remove this assertion, or free the space of the `cv` after all philosophers quit.
+> > **We should remove this assertion, or free the space of the** `cv` **after all philosophers quit.**
 
 ## End ##
 
